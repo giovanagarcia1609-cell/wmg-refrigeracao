@@ -183,12 +183,16 @@ export default function App() {
             >
               <div className="rounded-2xl overflow-hidden shadow-2xl aspect-video border-4 border-white">
                 <img 
-                  src="/hero.png" 
+                  src="hero.png" 
                   alt="Técnico de Refrigeração WMG realizando manutenção em São José do Rio Preto" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = "https://picsum.photos/seed/ac-repair-tech/800/600";
+                    // Tenta o caminho relativo se o primeiro falhar
+                    const target = e.target as HTMLImageElement;
+                    if (!target.src.includes('picsum')) {
+                       target.src = "https://picsum.photos/seed/ac-repair-tech/800/600";
+                    }
                   }}
                 />
               </div>
@@ -443,4 +447,3 @@ export default function App() {
     </div>
   );
 }
-
