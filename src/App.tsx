@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { motion } from "motion/react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { 
   MessageCircle, 
   CheckCircle2, 
@@ -19,12 +20,26 @@ import {
   Star,
   ArrowRight,
   Award,
-  HelpCircle
+  HelpCircle,
+  Info,
+  Menu,
+  X
 } from "lucide-react";
 
 const WHATSAPP_LINK = "https://wa.me/5517996685368?text=Ol%C3%A1%2C%20tudo%20bem%3F%20Gostaria%20de%20agendar%20com%20um%20t%C3%A9cnico%20da%20WMG%20refrigera%C3%A7%C3%A3o!";
 
 export default function App() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navItems = [
+    { label: "Serviços", href: "#servicos" },
+    { label: "Diferenciais", href: "#por-que-wmg" },
+    { label: "Manutenção", href: "#reparo-manutencao" },
+    { label: "Dúvidas", href: "#faq" },
+    { label: "Processo", href: "#como-funciona" },
+    { label: "Avaliações", href: "#avaliacoes" },
+  ];
+
   // Schema.org JSON-LD for LocalBusiness
   const schemaMarkup = {
     "@context": "https://schema.org",
@@ -77,8 +92,8 @@ export default function App() {
       </script>
 
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full py-4 bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center">
+      <header className="sticky top-0 z-50 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 h-20 flex justify-between items-center">
           <div className="flex items-center gap-4">
             <div className="flex flex-col">
               <span className="text-sm md:text-base font-black text-primary leading-tight uppercase">
@@ -89,41 +104,64 @@ export default function App() {
               </span>
             </div>
           </div>
-          <motion.a 
-            animate={{ 
-              scale: [1, 1.03, 1],
-              boxShadow: [
-                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-                "0 0 20px 5px rgba(37, 211, 102, 0.4)",
-                "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)"
-              ]
-            }}
-            transition={{ 
-              duration: 2, 
-              repeat: Infinity, 
-              ease: "easeInOut" 
-            }}
-            href={WHATSAPP_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-whatsapp text-white px-4 md:px-6 py-2 md:py-3 rounded-full text-xs md:text-sm font-bold shadow-lg hover:bg-green-600 transition-colors relative overflow-hidden group"
-          >
-            <motion.div
-              animate={{
-                x: ['-100%', '200%'],
-              }}
-              transition={{
-                duration: 3,
-                repeat: Infinity,
-                ease: "linear",
-                repeatDelay: 1
-              }}
-              className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12"
-            />
-            <MessageCircle size={18} fill="currentColor" className="relative z-10" />
-            <span className="relative z-10">WhatsApp</span>
-          </motion.a>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex items-center gap-6">
+            {navItems.map((item) => (
+              <a 
+                key={item.href} 
+                href={item.href}
+                className="text-sm font-bold text-slate-600 hover:text-primary transition-colors uppercase tracking-wider"
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-3">
+            {/* Mobile Menu Toggle */}
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="lg:hidden p-2 text-primary hover:bg-slate-100 rounded-lg transition-colors"
+            >
+              {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Navigation Overlay */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="lg:hidden bg-white border-t border-slate-100 overflow-hidden"
+            >
+              <div className="flex flex-col p-4 gap-4">
+                {navItems.map((item) => (
+                  <a 
+                    key={item.href} 
+                    href={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-lg font-bold text-slate-700 hover:text-primary p-2 transition-colors border-b border-slate-50 last:border-0"
+                  >
+                    {item.label}
+                  </a>
+                ))}
+                <a 
+                  href={WHATSAPP_LINK}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-whatsapp text-white p-4 rounded-xl font-bold flex items-center justify-center gap-3 shadow-lg"
+                >
+                  <MessageCircle size={24} fill="currentColor" />
+                  FALAR COM TÉCNICO AGORA
+                </a>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
 
       <main className="flex-grow">
@@ -159,7 +197,23 @@ export default function App() {
                 ))}
               </div>
 
-              <div className="flex flex-col gap-3 mt-4">
+              {/* Info Box: Visita Técnica */}
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex items-start gap-3 max-w-xl"
+              >
+                <div className="bg-primary/10 p-2 rounded-lg text-primary shrink-0">
+                  <Info size={20} />
+                </div>
+                <div>
+                  <p className="font-bold text-primary text-sm">Cobramos pela visita técnica</p>
+                  <p className="text-slate-600 text-xs mt-0.5">O valor é <strong>totalmente descontado</strong> do orçamento final caso o serviço seja fechado conosco.</p>
+                </div>
+              </motion.div>
+
+              <div className="flex flex-col gap-3 mt-1">
                 <a 
                   href={WHATSAPP_LINK}
                   target="_blank"
@@ -260,7 +314,7 @@ export default function App() {
         </section>
 
         {/* Why Choose Us */}
-        <section className="bg-primary py-20">
+        <section className="bg-primary py-20" id="por-que-wmg">
           <div className="max-w-7xl mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-black text-white mb-16">Por que a WMG Refrigeração é a melhor escolha?</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 md:gap-4">
@@ -282,7 +336,7 @@ export default function App() {
         </section>
 
         {/* Maintenance Chips */}
-        <section className="py-16 bg-background-light">
+        <section className="py-16 bg-background-light" id="reparo-manutencao">
           <div className="max-w-7xl mx-auto px-4">
             <h2 className="text-2xl font-bold text-center mb-10 text-primary uppercase tracking-widest">Serviços de Reparo e Manutenção</h2>
             <div className="flex flex-wrap justify-center gap-4">
@@ -308,7 +362,7 @@ export default function App() {
         </section>
 
         {/* FAQ Section - Great for SEO */}
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-white" id="faq">
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-black text-center mb-12 text-primary">Dúvidas Frequentes</h2>
             <div className="space-y-6">
@@ -343,7 +397,7 @@ export default function App() {
         </section>
 
         {/* How it Works */}
-        <section className="py-20 bg-white border-t border-slate-100">
+        <section className="py-20 bg-white border-t border-slate-100" id="como-funciona">
           <div className="max-w-7xl mx-auto px-4">
             <h2 className="text-3xl md:text-4xl font-black text-center mb-16 text-primary">Como solicitar seu atendimento</h2>
             <div className="flex flex-col md:flex-row gap-12 justify-center items-start relative">
@@ -365,7 +419,7 @@ export default function App() {
         </section>
 
         {/* Reviews */}
-        <section className="bg-background-light py-20">
+        <section className="bg-background-light py-20" id="avaliacoes">
           <div className="max-w-7xl mx-auto px-4">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-black text-primary mb-4">O que dizem nossos clientes em Rio Preto</h2>
@@ -444,6 +498,30 @@ export default function App() {
           <p>© 2026 WMG Refrigeração. Todos os direitos reservados.</p>
         </div>
       </footer>
+
+      {/* Floating CTA */}
+      <motion.a
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        href={WHATSAPP_LINK}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-40 bg-whatsapp text-white p-4 lg:px-8 lg:py-4 rounded-full lg:rounded-2xl shadow-2xl flex items-center justify-center gap-3 group transition-all duration-300"
+      >
+        <MessageCircle size={32} fill="currentColor" />
+        <span className="hidden lg:inline font-black text-lg uppercase tracking-tighter">WhatsApp</span>
+        <span className="absolute right-full mr-4 bg-white text-primary px-3 py-1.5 rounded-lg text-sm font-bold shadow-xl opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none border border-slate-100 lg:hidden">
+          Falar com Técnico
+        </span>
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0, 0.5] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="absolute inset-0 bg-whatsapp rounded-full lg:rounded-2xl -z-10"
+        />
+      </motion.a>
     </div>
   );
 }
+
