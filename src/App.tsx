@@ -4,7 +4,7 @@
  */
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   MessageCircle, 
   CheckCircle2, 
@@ -45,9 +45,9 @@ export default function App() {
     "@context": "https://schema.org",
     "@type": "LocalBusiness",
     "name": "WMG Refrigeração & Climatização",
-    "image": "https://ais-dev-cxofxc4lvg5lo2jg73iokn-106502954099.us-west2.run.app/hero.png",
+    "image": "hero.png",
     "@id": "",
-    "url": "https://ais-dev-cxofxc4lvg5lo2jg73iokn-106502954099.us-west2.run.app",
+    "url": "./",
     "telephone": "+55 17 99668-5368",
     "address": {
       "@type": "PostalAddress",
